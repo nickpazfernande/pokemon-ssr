@@ -8,7 +8,7 @@
 <!-- TODO:  pokemons-list-->
 @if (!isLoading()) {
 <!-- <app-pokemons-list /> -->
-<app-pokemons-list />
+<app-pokemons-list [pokemons]="pokemons()" />
 }
 
 @if (isLoading()) {

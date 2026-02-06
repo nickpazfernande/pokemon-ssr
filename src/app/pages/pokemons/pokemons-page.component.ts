@@ -2,6 +2,7 @@ import { ApplicationRef, ChangeDetectionStrategy, Component, inject, OnDestroy, 
 import { PokemonsListComponent } from "../../pokemons/components/pokemons-list/pokemons-list.component";
 import { PokemonListSkeletonComponent } from "../../pokemons/ui/pokemon-list-skeleton/pokemon-list-skeleton.component";
 import { PokemonsServices } from '../../pokemons/services/pokemons.services';
+import { SimplePokemon } from '../../pokemons/interfaces/simple-pokemon.interface';
 
 @Component({
   selector: 'pokemons-page',
@@ -11,13 +12,13 @@ import { PokemonsServices } from '../../pokemons/services/pokemons.services';
 })
 export default class PokemonsPageComponent implements OnDestroy, OnInit {
   private pokemonsServices = inject(PokemonsServices);
+  public pokemons = signal<SimplePokemon[]>([]);
+
   public isLoading = signal(true);
-
-  private appRef = inject(ApplicationRef);
-
-  private $appState = this.appRef.isStable.subscribe((isStable) => {
-    console.log({ isStable })
-  });
+  // private appRef = inject(ApplicationRef);
+  // private $appState = this.appRef.isStable.subscribe((isStable) => {
+  //   console.log({ isStable })
+  // });
 
   ngOnInit() {
 
@@ -30,12 +31,13 @@ export default class PokemonsPageComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    this.$appState.unsubscribe();
+    // this.$appState.unsubscribe();
   }
 
   public loadPokemonsPage(page: number = 1) {
     this.pokemonsServices.loadPage(page).subscribe(pokemons => {
-      console.log({ pokemons });
+      this.pokemons.set(pokemons);
+      this.isLoading.set(false);
     })
   }
 }

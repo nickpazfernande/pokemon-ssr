@@ -1,10 +1,9 @@
 <div
   class="bg-blue-700 h-44 bg-opacity-20 rounded-lg p-4 flex flex-col justify-center items-center hover:scale-105 transition-transform cursor-pointer">
-  <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png"
-    alt="official-artwork" class="w-24 h-24 " width="96px" height="96px" />
+  <img [src]="pokemonImage()" alt="official-artwork" class="w-24 h-24 " width="96px" height="96px" />
 
   <div class="text-center mt-2">
-    <h2 class="text-xl font-bold capitalize text-white">#004</h2>
+    <h2 class="text-xl font-bold capitalize text-white">{{ pokemon().name }}</h2>
 
   </div>
 </div>
