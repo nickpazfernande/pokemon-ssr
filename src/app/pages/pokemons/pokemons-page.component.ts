@@ -3,9 +3,10 @@ import { PokemonsListComponent } from "../../pokemons/components/pokemons-list/p
 import { PokemonListSkeletonComponent } from "../../pokemons/ui/pokemon-list-skeleton/pokemon-list-skeleton.component";
 import { PokemonsServices } from '../../pokemons/services/pokemons.services';
 import { SimplePokemon } from '../../pokemons/interfaces/simple-pokemon.interface';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from "@angular/core/rxjs-interop";
-import { map } from 'rxjs';
+import { map, tap } from 'rxjs';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'pokemons-page',
@@ -17,6 +18,8 @@ export default class PokemonsPageComponent implements OnDestroy, OnInit {
   private pokemonsServices = inject(PokemonsServices);
   public pokemons = signal<SimplePokemon[]>([]);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private title = inject(Title)
 
   public currentPage = toSignal(
     this.route.queryParamMap.pipe(
@@ -34,13 +37,11 @@ export default class PokemonsPageComponent implements OnDestroy, OnInit {
   // });
 
   ngOnInit() {
-    console.log(this.currentPage());
-
     // setTimeout(() => {
     //   this.isLoading.set(false);
     // }, 1500);
 
-    this.loadPokemonsPage(this.currentPage());
+    this.loadPokemonsPage(this.currentPage()!);
   }
 
   ngOnDestroy(): void {
@@ -48,13 +49,26 @@ export default class PokemonsPageComponent implements OnDestroy, OnInit {
   }
 
   public loadPokemonsPage(page: number = 1) {
+    //Solo sumar si es +1 y restar si es -1, no hacer nada si es 0
+    let nextPage = this.currentPage()!
+    //Sumar uno si es +1 y el query param actual no es 1
+    if (page === +1) {
+      nextPage++;
+    } else if (page === -1) {
+      nextPage--;
+    }
 
-    const nextPage = this.currentPage()! + page;
-    console.log('next page: ' + nextPage)
-    this.pokemonsServices.loadPage(nextPage).subscribe(pokemons => {
-      this.pokemons.set(pokemons);
-      this.isLoading.set(false);
+    nextPage = Math.max(0, nextPage);
 
-    })
+    this.pokemonsServices.loadPage(nextPage).pipe(
+      tap(() => this.router.navigate([], {
+        queryParams: { page: nextPage },
+      })),
+      tap(() => this.title.setTitle(`Pokemons - Página ${nextPage}`))
+    )
+      .subscribe(pokemons => {
+        this.pokemons.set(pokemons);
+        this.isLoading.set(false);
+      })
   }
 }
