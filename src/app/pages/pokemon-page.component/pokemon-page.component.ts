@@ -20,8 +20,8 @@ export default class PokemonPageComponent implements OnInit {
   private meta = inject(Meta);
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id') || '';
-    this.pokemonsServices.loadPokemon(id)
+    const idOrName = this.route.snapshot.paramMap.get('idOrName') || '';
+    this.pokemonsServices.loadPokemon(idOrName)
       .pipe(
         tap(({ name, id }) => {
           this.title.setTitle(`${name} #${id} | Pokédex App`);
