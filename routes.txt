@@ -1,0 +1,4 @@
+/pokemons/1
+/pokemons/2
+/pokemons/3
+

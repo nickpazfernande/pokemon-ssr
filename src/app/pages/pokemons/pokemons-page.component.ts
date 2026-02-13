@@ -22,11 +22,11 @@ export default class PokemonsPageComponent {
   private title = inject(Title)
 
   public currentPage = toSignal(
-    this.route.queryParamMap.pipe(
+    this.route.paramMap.pipe(
       map(params => {
-        const queryPage = Number(params.get('page') ?? '1');
-        if (Number.isNaN(queryPage)) return 1;
-        return Math.max(1, queryPage);
+        const routePage = Number(params.get('page') ?? '1');
+        if (Number.isNaN(routePage)) return 1;
+        return Math.max(1, routePage);
       })
     ),
     { initialValue: 1 }
@@ -47,10 +47,7 @@ export default class PokemonsPageComponent {
 
   public loadPokemonsPage(delta: number) {
     const nextPage = Math.max(1, this.currentPage() + delta);
-    this.router.navigate([], {
-      queryParams: { page: nextPage },
-      queryParamsHandling: 'merge',
-    });
+    this.router.navigate(['/pokemons', nextPage]);
   }
 
   private fetchPokemons(page: number) {
